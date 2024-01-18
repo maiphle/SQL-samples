@@ -1,3 +1,5 @@
+[Question Link](https://www.interviewquery.com/questions/feed-impression)
+
 Let’s say you work at Pinterest. On Pinterest’s internal database, the table pins contains an identifier number and creation date/time of pins (content such as pictures or videos) that a user posted on his profile.
 
 The table event_log is a log table containing data about all actions on pins.
