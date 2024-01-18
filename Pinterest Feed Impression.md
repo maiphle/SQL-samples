@@ -14,21 +14,31 @@ Input:
 
 pins table
 
-Columns	Type
-pin_id	INTEGER
-created_at	DATETIME
+| Column    | Type     |
+|-----------|----------|
+| pin_id    | INTEGER  |
+| created_at| DATETIME |
+
+
+
 event_log table
 
-Columns	Type
-event_id	INTEGER
-pin_id	INTEGER
-user_id	INTEGER
-action_type	VARCHAR
-action_date	DATETIME
+| Column     | Type     |
+|------------|----------|
+| event_id   | INTEGER  |
+| pin_id     | INTEGER  |
+| user_id    | INTEGER  |
+| action_type| VARCHAR  |
+| action_date| DATETIME |
+
+
+
 Output:
 
-Columns	Type
-percent_of_users	FLOAT
+| Column    | Type     |
+|-----------|----------|
+| percent_of_users    | FLOAT  |
+
 
 
 ## My solution: 
@@ -53,9 +63,9 @@ WHERE
 ## Official solution:
 
 ```
-WITH users_who_viewed_within_a_week  AS 
+WITH users_who_viewed_within_a_week  AS // Viewed at least one pin within a week
 (
-  SELECT user_id, max(viewed_within_a_week) AS viewed_within_a_week // Viewed at least one pin within a week
+  SELECT user_id, max(viewed_within_a_week) AS viewed_within_a_week 
   FROM 
   (
     SELECT user_id, created_at, action_date, IF(DATEDIFF(action_date,created_at) <= 7, 1, 0) AS viewed_within_a_week
@@ -65,12 +75,13 @@ WITH users_who_viewed_within_a_week  AS
    ) x
   GROUP BY user_id HAVING viewed_within_a_week = 1
 ),
-users_who_reacted AS 
+
+users_who_reacted AS // Made an engagement on any pin, regardless of when it occurred
 (
-SELECT DISTINCT user_id  FROM event_log WHERE action_type = 'Engagement' // Made an engagement on any pin, regardless of when it occurred
+SELECT DISTINCT user_id  FROM event_log WHERE action_type = 'Engagement' 
 )
-SELECT (SELECT COUNT(1) FROM users_who_viewed_within_a_week x
-JOIN users_who_reacted y ON x.user_id = y.user_id)
+
+SELECT (SELECT COUNT(1) FROM users_who_viewed_within_a_week x JOIN users_who_reacted y ON x.user_id = y.user_id) // Calculate the percentage of users 
 /
 (SELECT count(distinct user_id) AS total_number_of_users FROM event_log)
 AS percent_of_users
