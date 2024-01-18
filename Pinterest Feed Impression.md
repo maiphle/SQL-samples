@@ -41,8 +41,11 @@ Output:
 
 
 
-## My solution: 
+## My solutions: 
 ```
+
+//Solution 1
+
 SELECT
     COUNT(DISTINCT user_id) / (SELECT COUNT(DISTINCT user_id) FROM event_log) AS percent_of_users
 FROM
@@ -58,6 +61,23 @@ WHERE
         WHERE pin_id = el.pin_id
           AND action_type = 'Engagement'
     );
+
+
+// solution 2:
+
+SELECT 
+COUNT(DISTINCT user_id)/(SELECT COUNT(DISTINCT user_id) FROM event_log) AS percent_of_users
+FROM event_log e
+JOIN pins p ON e.pin_id = p.pin_id
+WHERE e.action_type = 'View'
+    AND DATEDIFF(e.action_date,p.created_at) <= 7
+    AND EXISTS (
+        SELECT 1
+        FROM event_log
+        WHERE pin_id = e.pin_id
+        AND action_type = 'Engagement'
+      )
+
 ```
 
 ## Official solution:
